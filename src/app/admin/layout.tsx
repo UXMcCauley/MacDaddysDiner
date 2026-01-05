@@ -86,6 +86,7 @@ export default function AdminLayout({
                 src="/images/logo.avif"
                 alt="Mac Daddy's"
                 fill
+                sizes="96px"
                 className="object-contain"
               />
             </div>
@@ -148,6 +149,7 @@ export default function AdminLayout({
                   src="/images/logo.avif"
                   alt="Mac Daddy's"
                   fill
+                  sizes="40px"
                   className="object-contain"
                 />
               </div>
@@ -166,6 +168,16 @@ export default function AdminLayout({
                 }`}
               >
                 MENU
+              </Link>
+              <Link
+                href="/admin/gallery"
+                className={`px-4 py-2 rounded font-headline tracking-wider text-sm transition-colors ${
+                  pathname === '/admin/gallery'
+                    ? 'bg-[#C41E3A] text-white'
+                    : 'text-gray-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                GALLERY
               </Link>
               <Link
                 href="/admin/feedback"

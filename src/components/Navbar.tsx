@@ -54,6 +54,7 @@ export default function Navbar() {
                 src="/images/logo.avif"
                 alt="Mac Daddy's Diner"
                 fill
+                sizes="(max-width: 768px) 48px, 64px"
                 className="object-contain"
                 priority
               />

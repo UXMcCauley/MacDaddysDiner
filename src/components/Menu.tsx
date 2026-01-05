@@ -1,3 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @next/next/no-img-element */
+ 
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -299,7 +302,7 @@ function MenuItemModal({
 function CategoryHeader({ category, isSticky }: { category: MenuCategory; isSticky: boolean }) {
   return (
     <div
-      className={`sticky top-16 md:top-20 z-30 transition-all duration-200 ${
+      className={`sticky top-16 md:top-20 z-30  ${
         isSticky ? 'bg-[#FFF8E7]/95 backdrop-blur-sm shadow-md' : 'bg-transparent'
       }`}
     >
@@ -520,7 +523,7 @@ export default function Menu() {
           </FadeIn>
 
           {/* All Categories */}
-          {categories.map((category, categoryIndex) => (
+          {categories.map((category) => (
             <div
               key={category.id}
               id={`category-${category.id}`}

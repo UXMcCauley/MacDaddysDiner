@@ -47,6 +47,7 @@ export default function Hero() {
             src="/images/logo.avif"
             alt="Mac Daddy's Diner"
             fill
+            sizes="(max-width: 768px) 192px, 256px"
             className="object-contain drop-shadow-2xl"
             priority
           />

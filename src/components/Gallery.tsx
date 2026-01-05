@@ -1,30 +1,61 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { FadeIn, motion, scaleIn } from './animations';
+import { FadeIn, motion } from './animations';
 import { AnimatePresence } from 'framer-motion';
 
-const galleryImages = [
-  { src: '/images/gallery-1.png', alt: 'Diner interior with vintage decor', category: 'interior' },
-  { src: '/images/gallery-2.png', alt: 'Classic burger and fries', category: 'food' },
-  { src: '/images/gallery-3.png', alt: 'Breakfast omelette', category: 'food' },
-  { src: '/images/gallery-4.png', alt: 'Jukebox and license plates', category: 'interior' },
-  { src: '/images/gallery-5.png', alt: 'Chef preparing food', category: 'team' },
-  { src: '/images/gallery-6.png', alt: 'Milkshake', category: 'food' },
-  { src: '/images/gallery-7.png', alt: 'Counter seating', category: 'interior' },
-  { src: '/images/gallery-8.png', alt: 'Exterior with Route 28 sign', category: 'exterior' },
+interface GalleryImage {
+  id: string;
+  url: string;
+  alt: string;
+  category: 'food' | 'interior' | 'team' | 'exterior';
+  order: number;
+}
+
+// Fallback images if database is empty
+const fallbackImages: GalleryImage[] = [
+  { id: '1', url: '/images/gallery-1.png', alt: 'Diner interior with vintage decor', category: 'interior', order: 0 },
+  { id: '2', url: '/images/gallery-2.png', alt: 'Classic burger and fries', category: 'food', order: 1 },
+  { id: '3', url: '/images/gallery-3.png', alt: 'Breakfast omelette', category: 'food', order: 2 },
+  { id: '4', url: '/images/gallery-4.png', alt: 'Jukebox and license plates', category: 'interior', order: 3 },
+  { id: '5', url: '/images/gallery-5.png', alt: 'Chef preparing food', category: 'team', order: 4 },
+  { id: '6', url: '/images/gallery-6.png', alt: 'Milkshake', category: 'food', order: 5 },
+  { id: '7', url: '/images/gallery-7.png', alt: 'Counter seating', category: 'interior', order: 6 },
+  { id: '8', url: '/images/gallery-8.png', alt: 'Exterior with Route 28 sign', category: 'exterior', order: 7 },
 ];
 
 export default function Gallery() {
+  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('all');
+
+  useEffect(() => {
+    fetchGallery();
+  }, []);
+
+  const fetchGallery = async () => {
+    try {
+      const res = await fetch('/api/gallery');
+      const data = await res.json();
+      if (data.success && data.data?.length > 0) {
+        setImages(data.data);
+      } else {
+        setImages(fallbackImages);
+      }
+    } catch {
+      setImages(fallbackImages);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const categories = ['all', 'food', 'interior', 'team', 'exterior'];
 
   const filteredImages = filter === 'all'
-    ? galleryImages
-    : galleryImages.filter((img) => img.category === filter);
+    ? images
+    : images.filter((img) => img.category === filter);
 
   return (
     <section id="gallery" className="py-16 md:py-24 bg-[#FFF8E7]">
@@ -67,56 +98,73 @@ export default function Gallery() {
           </div>
         </FadeIn>
 
-        {/* Gallery Grid */}
-        <motion.div
-          layout
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-        >
-          <AnimatePresence mode="popLayout">
-            {filteredImages.map((image, index) => (
-              <motion.div
-                key={image.src}
-                layout
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                className="relative aspect-square cursor-pointer group overflow-hidden rounded-lg"
-                onClick={() => setSelectedImage(image.src)}
-                whileHover={{ scale: 1.02 }}
-              >
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 1 }}
-                  className="absolute inset-0 bg-black/40 flex items-center justify-center"
-                >
-                  <motion.svg
-                    initial={{ scale: 0, rotate: -180 }}
-                    whileHover={{ scale: 1, rotate: 0 }}
-                    transition={{ type: 'spring', stiffness: 200 }}
-                    className="w-12 h-12 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-                    />
-                  </motion.svg>
-                </motion.div>
-              </motion.div>
+        {/* Loading State */}
+        {loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="aspect-square bg-gray-200 rounded-lg animate-pulse" />
             ))}
-          </AnimatePresence>
-        </motion.div>
+          </div>
+        ) : (
+          /* Gallery Grid */
+          <motion.div
+            layout
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+          >
+            <AnimatePresence mode="popLayout">
+              {filteredImages.map((image, index) => (
+                <motion.div
+                  key={image.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  className="relative aspect-square cursor-pointer group overflow-hidden rounded-lg"
+                  onClick={() => setSelectedImage(image.url)}
+                  whileHover={{ scale: 1.02 }}
+                >
+                  <Image
+                    src={image.url}
+                    alt={image.alt}
+                    fill
+                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    className="absolute inset-0 bg-black/40 flex items-center justify-center"
+                  >
+                    <motion.svg
+                      initial={{ scale: 0, rotate: -180 }}
+                      whileHover={{ scale: 1, rotate: 0 }}
+                      transition={{ type: 'spring', stiffness: 200 }}
+                      className="w-12 h-12 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                      />
+                    </motion.svg>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        )}
+
+        {/* Empty State */}
+        {!loading && filteredImages.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No images in this category yet.</p>
+          </div>
+        )}
 
         {/* Social CTA */}
         <FadeIn delay={0.2} className="mt-12 text-center">
@@ -187,6 +235,7 @@ export default function Gallery() {
                 src={selectedImage}
                 alt="Gallery image"
                 fill
+                sizes="(max-width: 1024px) 100vw, 80vw"
                 className="object-contain"
               />
             </motion.div>
