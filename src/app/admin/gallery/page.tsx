@@ -172,7 +172,30 @@ export default function GalleryManagement() {
 
       if (res.ok) {
         await fetchMenuItems();
-        alert('Image set as menu item photo!');
+
+        // Prompt to update gallery description with menu item name
+        const shouldUpdateDescription = confirm(
+          `Image assigned to "${menuItem.name}"!\n\nWould you also like to update this gallery image's description to "${menuItem.name}"?`
+        );
+
+        if (shouldUpdateDescription) {
+          // Update the gallery image's alt text
+          const galleryRes = await fetch('/api/gallery', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: editingImage.id,
+              alt: menuItem.name,
+            }),
+          });
+
+          if (galleryRes.ok) {
+            // Update local state
+            setEditingImage({ ...editingImage, alt: menuItem.name });
+            await fetchGallery();
+          }
+        }
+
         setSelectedMenuItem('');
       } else {
         const data = await res.json();
