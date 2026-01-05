@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { ToastProvider } from '@/components/ui/Toast';
+import { ConfirmProvider } from '@/components/ui/ConfirmModal';
 
 export default function AdminLayout({
   children,
@@ -138,80 +140,84 @@ export default function AdminLayout({
 
   // Admin dashboard
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Admin Header */}
-      <header className="bg-[#1a1a1a] text-white sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/admin" className="flex items-center gap-2">
-              <div className="relative w-10 h-10">
-                <Image
-                  src="/images/logo.avif"
-                  alt="Mac Daddy's"
-                  fill
-                  sizes="40px"
-                  className="object-contain"
-                />
+    <ToastProvider>
+      <ConfirmProvider>
+        <div className="min-h-screen bg-gray-100">
+          {/* Admin Header */}
+          <header className="bg-[#1a1a1a] text-white sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Link href="/admin" className="flex items-center gap-2">
+                  <div className="relative w-10 h-10">
+                    <Image
+                      src="/images/logo.avif"
+                      alt="Mac Daddy's"
+                      fill
+                      sizes="40px"
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="font-headline text-xl tracking-wider hidden sm:block">
+                    ADMIN
+                  </span>
+                </Link>
+
+                <nav className="flex gap-2 ml-8">
+                  <Link
+                    href="/admin/menu"
+                    className={`px-4 py-2 rounded font-headline tracking-wider text-sm transition-colors ${
+                      pathname === '/admin/menu'
+                        ? 'bg-[#C41E3A] text-white'
+                        : 'text-gray-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    MENU
+                  </Link>
+                  <Link
+                    href="/admin/gallery"
+                    className={`px-4 py-2 rounded font-headline tracking-wider text-sm transition-colors ${
+                      pathname === '/admin/gallery'
+                        ? 'bg-[#C41E3A] text-white'
+                        : 'text-gray-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    GALLERY
+                  </Link>
+                  <Link
+                    href="/admin/feedback"
+                    className={`px-4 py-2 rounded font-headline tracking-wider text-sm transition-colors ${
+                      pathname === '/admin/feedback'
+                        ? 'bg-[#C41E3A] text-white'
+                        : 'text-gray-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    FEEDBACK
+                  </Link>
+                </nav>
               </div>
-              <span className="font-headline text-xl tracking-wider hidden sm:block">
-                ADMIN
-              </span>
-            </Link>
 
-            <nav className="flex gap-2 ml-8">
-              <Link
-                href="/admin/menu"
-                className={`px-4 py-2 rounded font-headline tracking-wider text-sm transition-colors ${
-                  pathname === '/admin/menu'
-                    ? 'bg-[#C41E3A] text-white'
-                    : 'text-gray-300 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                MENU
-              </Link>
-              <Link
-                href="/admin/gallery"
-                className={`px-4 py-2 rounded font-headline tracking-wider text-sm transition-colors ${
-                  pathname === '/admin/gallery'
-                    ? 'bg-[#C41E3A] text-white'
-                    : 'text-gray-300 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                GALLERY
-              </Link>
-              <Link
-                href="/admin/feedback"
-                className={`px-4 py-2 rounded font-headline tracking-wider text-sm transition-colors ${
-                  pathname === '/admin/feedback'
-                    ? 'bg-[#C41E3A] text-white'
-                    : 'text-gray-300 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                FEEDBACK
-              </Link>
-            </nav>
-          </div>
+              <div className="flex items-center gap-4">
+                <Link
+                  href="/"
+                  target="_blank"
+                  className="text-gray-400 hover:text-white text-sm"
+                >
+                  View Site &rarr;
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-gray-400 hover:text-[#C41E3A] text-sm font-headline tracking-wider"
+                >
+                  LOGOUT
+                </button>
+              </div>
+            </div>
+          </header>
 
-          <div className="flex items-center gap-4">
-            <Link
-              href="/"
-              target="_blank"
-              className="text-gray-400 hover:text-white text-sm"
-            >
-              View Site &rarr;
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="text-gray-400 hover:text-[#C41E3A] text-sm font-headline tracking-wider"
-            >
-              LOGOUT
-            </button>
-          </div>
+          {/* Main Content */}
+          <main className="max-w-7xl mx-auto px-4 py-8">{children}</main>
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">{children}</main>
-    </div>
+      </ConfirmProvider>
+    </ToastProvider>
   );
 }

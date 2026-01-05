@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { useToast } from '@/components/ui/Toast';
+import { useConfirm } from '@/components/ui/ConfirmModal';
 
 interface GalleryImage {
   id: string;
@@ -23,6 +25,9 @@ interface MenuItem {
 const categories = ['food', 'interior', 'team', 'exterior'] as const;
 
 export default function GalleryManagement() {
+  const { showToast } = useToast();
+  const { confirm } = useConfirm();
+
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -138,12 +143,15 @@ export default function GalleryManagement() {
     }
 
     await fetchGallery();
+    const totalSelected = selectedImages.size;
     setSelectedImages(new Set());
     setSelectMode(false);
     setBulkUpdating(false);
 
-    if (successCount < selectedImages.size) {
-      alert(`Updated ${successCount} of ${selectedImages.size} images.`);
+    if (successCount < totalSelected) {
+      showToast(`Updated ${successCount} of ${totalSelected} images`, 'error');
+    } else {
+      showToast(`Updated ${successCount} image${successCount > 1 ? 's' : ''} to "${bulkCategory}"`, 'success');
     }
   };
 
@@ -154,7 +162,7 @@ export default function GalleryManagement() {
     // Find the selected menu item to get its categoryId
     const menuItem = menuItems.find((item) => item.id === selectedMenuItem);
     if (!menuItem) {
-      alert('Menu item not found');
+      showToast('Menu item not found', 'error');
       return;
     }
 
@@ -172,11 +180,15 @@ export default function GalleryManagement() {
 
       if (res.ok) {
         await fetchMenuItems();
+        showToast(`Image assigned to "${menuItem.name}"`, 'success');
 
         // Prompt to update gallery description with menu item name
-        const shouldUpdateDescription = confirm(
-          `Image assigned to "${menuItem.name}"!\n\nWould you also like to update this gallery image's description to "${menuItem.name}"?`
-        );
+        const shouldUpdateDescription = await confirm({
+          title: 'UPDATE DESCRIPTION',
+          message: `Would you like to update this gallery image's description to match the menu item name?\n\n"${menuItem.name}"`,
+          confirmText: 'YES, UPDATE',
+          cancelText: 'NO THANKS',
+        });
 
         if (shouldUpdateDescription) {
           // Update the gallery image's alt text
@@ -193,17 +205,18 @@ export default function GalleryManagement() {
             // Update local state
             setEditingImage({ ...editingImage, alt: menuItem.name });
             await fetchGallery();
+            showToast('Description updated', 'success');
           }
         }
 
         setSelectedMenuItem('');
       } else {
         const data = await res.json();
-        alert(`Failed to set menu photo: ${data.error || 'Unknown error'}`);
+        showToast(`Failed to set menu photo: ${data.error || 'Unknown error'}`, 'error');
       }
     } catch (error) {
       console.error('Error setting menu photo:', error);
-      alert('Failed to set menu photo');
+      showToast('Failed to set menu photo', 'error');
     } finally {
       setSettingMenuPhoto(false);
     }
@@ -255,20 +268,34 @@ export default function GalleryManagement() {
     setUploadProgress(null);
 
     if (results.failed > 0) {
-      alert(`Uploaded ${results.success} of ${files.length} images. ${results.failed} failed.`);
+      showToast(`Uploaded ${results.success} of ${files.length} images. ${results.failed} failed.`, 'error');
+    } else if (results.success > 0) {
+      showToast(`Successfully uploaded ${results.success} image${results.success > 1 ? 's' : ''}`, 'success');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this image?')) return;
+    const confirmed = await confirm({
+      title: 'DELETE IMAGE',
+      message: 'Are you sure you want to delete this image? This action cannot be undone.',
+      confirmText: 'DELETE',
+      cancelText: 'CANCEL',
+      confirmStyle: 'danger',
+    });
+
+    if (!confirmed) return;
 
     try {
       const res = await fetch(`/api/gallery?id=${id}`, { method: 'DELETE' });
       if (res.ok) {
         await fetchGallery();
+        showToast('Image deleted successfully', 'success');
+      } else {
+        showToast('Failed to delete image', 'error');
       }
     } catch (error) {
       console.error('Delete error:', error);
+      showToast('Failed to delete image', 'error');
     }
   };
 
