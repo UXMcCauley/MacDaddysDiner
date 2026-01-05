@@ -1,10 +1,9 @@
 import { Resend } from 'resend';
 
-if (!process.env.RESEND_API_KEY) {
-  throw new Error('RESEND_API_KEY environment variable is not set');
-}
-
-export const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Resend client - will be null during build if API key not set
+export const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 export const EMAIL_FROM = process.env.EMAIL_FROM || "Mac Daddy's Diner <hello@syntheticbrilliance.online>";
 
@@ -18,6 +17,11 @@ export async function sendEmail({
   subject: string;
   react: React.ReactElement;
 }) {
+  if (!resend) {
+    console.error('RESEND_API_KEY environment variable is not set');
+    return { success: false, error: 'Email service not configured' };
+  }
+
   try {
     const { data, error } = await resend.emails.send({
       from: EMAIL_FROM,

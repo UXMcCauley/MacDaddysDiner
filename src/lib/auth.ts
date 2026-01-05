@@ -41,6 +41,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const { host } = new URL(url);
 
         try {
+          if (!resend) {
+            throw new Error("RESEND_API_KEY environment variable is not set");
+          }
+
           // Render the React email template to HTML
           const html = await render(MagicLinkEmail({ url, host }));
 
