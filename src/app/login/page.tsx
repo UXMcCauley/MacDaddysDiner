@@ -8,7 +8,6 @@ import { motion } from 'framer-motion';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -18,18 +17,18 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const result = await signIn('email-signup', {
+      const result = await signIn('resend', {
         email,
-        name,
         redirect: false,
+        callbackUrl: '/#menu',
       });
 
       if (result?.error) {
         setError('Something went wrong. Please try again.');
         setIsLoading(false);
-      } else {
-        // Redirect on success
-        window.location.href = '/#menu';
+      } else if (result?.ok) {
+        // Redirect to verify-request page
+        window.location.href = '/auth/verify-request?email=' + encodeURIComponent(email);
       }
     } catch {
       setError('Something went wrong. Please try again.');
@@ -57,36 +56,23 @@ export default function LoginPage() {
               src="/images/logo.avif"
               alt="Mac Daddy's Diner"
               fill
+              sizes="96px"
               className="object-contain"
             />
           </motion.div>
           <h1 className="font-display text-3xl text-[#1a1a1a]">
-            Join the Family
+            Sign In
           </h1>
           <p className="text-gray-600 mt-2 font-accent italic">
-            Sign up for our mailing list to heart your favorites!
+            We&apos;ll send you a magic link to sign in
           </p>
         </div>
 
-        {/* Email Signup Form */}
+        {/* Magic Link Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block font-headline text-sm text-gray-700 mb-1">
-              YOUR NAME (OPTIONAL)
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="What should we call you?"
-              className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-[#C41E3A] focus:outline-none transition-colors font-accent"
-            />
-          </div>
-
-          <div>
             <label htmlFor="email" className="block font-headline text-sm text-gray-700 mb-1">
-              EMAIL ADDRESS *
+              EMAIL ADDRESS
             </label>
             <input
               type="email"
@@ -120,24 +106,23 @@ export default function LoginPage() {
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                JOIN THE MAILING LIST
+                SEND MAGIC LINK
               </>
             )}
           </motion.button>
         </form>
 
-        {/* Divider */}
+        {/* How it works */}
         <div className="flex items-center my-6">
           <div className="flex-1 h-px bg-gray-300"></div>
-          <span className="px-4 text-gray-500 text-sm">What you&apos;ll get</span>
+          <span className="px-4 text-gray-500 text-sm">How it works</span>
           <div className="flex-1 h-px bg-gray-300"></div>
         </div>
 
-        {/* Benefits */}
+        {/* Steps */}
         <div className="space-y-3 text-sm">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -145,12 +130,10 @@ export default function LoginPage() {
             transition={{ delay: 0.3 }}
             className="flex items-center gap-3"
           >
-            <div className="w-8 h-8 bg-[#C41E3A] rounded-full flex items-center justify-center flex-shrink-0">
-              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-              </svg>
+            <div className="w-8 h-8 bg-[#C41E3A] rounded-full flex items-center justify-center flex-shrink-0 font-headline text-white">
+              1
             </div>
-            <span className="text-gray-700">Heart your favorite dishes</span>
+            <span className="text-gray-700">Enter your email address above</span>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -158,13 +141,10 @@ export default function LoginPage() {
             transition={{ delay: 0.4 }}
             className="flex items-center gap-3"
           >
-            <div className="w-8 h-8 bg-[#C41E3A] rounded-full flex items-center justify-center flex-shrink-0">
-              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-              </svg>
+            <div className="w-8 h-8 bg-[#C41E3A] rounded-full flex items-center justify-center flex-shrink-0 font-headline text-white">
+              2
             </div>
-            <span className="text-gray-700">Get updates on specials & events</span>
+            <span className="text-gray-700">Check your inbox for a sign-in link</span>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -172,18 +152,41 @@ export default function LoginPage() {
             transition={{ delay: 0.5 }}
             className="flex items-center gap-3"
           >
-            <div className="w-8 h-8 bg-[#C41E3A] rounded-full flex items-center justify-center flex-shrink-0">
-              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clipRule="evenodd" />
-              </svg>
+            <div className="w-8 h-8 bg-[#C41E3A] rounded-full flex items-center justify-center flex-shrink-0 font-headline text-white">
+              3
             </div>
-            <span className="text-gray-700">Exclusive offers for subscribers</span>
+            <span className="text-gray-700">Click the link to sign in - no password needed!</span>
           </motion.div>
+        </div>
+
+        {/* Benefits */}
+        <div className="mt-6 p-4 bg-white rounded-lg border border-gray-200">
+          <p className="font-headline text-sm text-gray-700 mb-2">MEMBER BENEFITS</p>
+          <ul className="text-sm text-gray-600 space-y-1">
+            <li className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-[#C41E3A]" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              Heart your favorite dishes
+            </li>
+            <li className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-[#C41E3A]" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              Get updates on specials & events
+            </li>
+            <li className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-[#C41E3A]" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              Exclusive offers for subscribers
+            </li>
+          </ul>
         </div>
 
         {/* Privacy note */}
         <p className="text-xs text-gray-500 text-center mt-6">
-          We respect your privacy. Unsubscribe anytime.
+          No password required. We&apos;ll send a secure link to your email.
         </p>
 
         {/* Back link */}

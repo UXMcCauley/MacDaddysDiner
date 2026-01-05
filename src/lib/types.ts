@@ -66,3 +66,27 @@ export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
 }
+
+// Notification Preferences Types
+export interface NotificationPreferences {
+  dailySpecials: boolean;
+  eventsAnnouncements: boolean;
+  feedbackReplies: boolean;
+}
+
+export interface UserProfile {
+  _id?: ObjectId;
+  email: string;
+  name: string;
+  emailVerified: Date | null;
+  createdAt: Date;
+  updatedAt?: Date;
+  notificationPreferences: NotificationPreferences;
+  unsubscribeToken: string;
+}
+
+export interface VerificationToken {
+  identifier: string;
+  token: string;
+  expires: Date;
+}

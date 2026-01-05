@@ -120,8 +120,15 @@ export default function Navbar() {
                     >
                       <div className="px-4 py-2 border-b">
                         <p className="font-headline text-sm text-gray-500">Signed in as</p>
-                        <p className="font-headline truncate">{session.user?.name}</p>
+                        <p className="font-headline truncate">{session.user?.name || session.user?.email?.split('@')[0]}</p>
                       </div>
+                      <Link
+                        href="/account/preferences"
+                        onClick={() => setShowUserMenu(false)}
+                        className="block w-full text-left px-4 py-2 font-headline text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                      >
+                        Email Preferences
+                      </Link>
                       <motion.button
                         whileHover={{ backgroundColor: '#f3f4f6' }}
                         onClick={() => {
@@ -302,6 +309,13 @@ export default function Navbar() {
                 <p className="font-headline text-sm text-gray-500">Signed in as</p>
                 <p className="font-headline truncate">{session.user?.name}</p>
               </div>
+              <Link
+                href="/account/preferences"
+                onClick={() => setShowUserMenu(false)}
+                className="block w-full text-left px-4 py-2 font-headline text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                Email Preferences
+              </Link>
               <motion.button
                 whileHover={{ backgroundColor: '#f3f4f6' }}
                 onClick={() => {
