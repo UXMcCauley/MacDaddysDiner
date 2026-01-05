@@ -10,6 +10,7 @@ export interface MenuItem {
   popular?: boolean;
   featured?: boolean;
   available?: boolean;
+  image?: string;
 }
 
 export interface MenuCategory {

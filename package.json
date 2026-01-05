@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.11.1",
+    "@vercel/blob": "^2.0.0",
     "daisyui": "^5.5.14",
     "framer-motion": "^12.23.26",
     "mongodb": "^7.0.0",
