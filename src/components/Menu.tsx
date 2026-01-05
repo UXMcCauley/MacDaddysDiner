@@ -130,7 +130,7 @@ export default function Menu() {
           {!session && (
             <p className="text-sm text-gray-500 mt-2">
               <a href="/login" className="text-[#C41E3A] hover:underline">
-                Sign in
+                Join our mailing list
               </a>{' '}
               to heart your favorite dishes!
             </p>
